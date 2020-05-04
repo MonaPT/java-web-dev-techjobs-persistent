@@ -1,7 +1,11 @@
 package org.launchcode.javawebdevtechjobspersistent.controllers;
 
+import org.launchcode.javawebdevtechjobspersistent.models.Employer;
 import org.launchcode.javawebdevtechjobspersistent.models.Job;
+import org.launchcode.javawebdevtechjobspersistent.models.Skill;
+import org.launchcode.javawebdevtechjobspersistent.models.data.EmployerRepository;
 import org.launchcode.javawebdevtechjobspersistent.models.data.JobRepository;
+import org.launchcode.javawebdevtechjobspersistent.models.data.SkillRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,34 +26,53 @@ public class ListController {
     @Autowired
     private JobRepository jobRepository;
 
+    @Autowired
+    private EmployerRepository employerRepository;
+
+    @Autowired
+    private SkillRepository skillRepository;
+
     static HashMap<String, String> columnChoices = new HashMap<>();
 
     public ListController () {
 
         columnChoices.put("all", "All");
         columnChoices.put("employer", "Employer");
-        columnChoices.put("skill", "Skill");
+        columnChoices.put("skills", "Skills");
 
     }
 
     @RequestMapping("")
     public String list(Model model) {
 
+        model.addAttribute("employers",employerRepository.findAll());
+        model.addAttribute("skills",skillRepository.findAll());
         return "list";
     }
 
     @RequestMapping(value = "jobs")
     public String listJobsByColumnAndValue(Model model, @RequestParam String column, @RequestParam String value) {
-        Iterable<Job> jobs;
+        Iterable<Job> jobs = null;
+        Iterable<Employer> employers;
+        Iterable<Skill> skills;
         if (column.toLowerCase().equals("all")){
             jobs = jobRepository.findAll();
             model.addAttribute("title", "All Jobs");
+            System.out.println("jobs in list controller is...."+jobs);
+            employers=employerRepository.findAll();
+            model.addAttribute("employers",employers);
+            skills=skillRepository.findAll();
+            model.addAttribute("skills",skills);
         } else {
-            jobs = JobData.findByColumnAndValue(column, value, jobRepository.findAll());
+            if(column.equals("employer"))
+                jobs=jobRepository.findAll();
+            if(column.equals("skill"))
+                jobs=jobRepository.findAll();
+            System.out.println("Jobs in list conroller...."+jobs);
+            //jobs = JobData.findByColumnAndValue(column, value, jobRepository.findAll());
             model.addAttribute("title", "Jobs with " + columnChoices.get(column) + ": " + value);
         }
         model.addAttribute("jobs", jobs);
-
         return "list-jobs";
     }
 }

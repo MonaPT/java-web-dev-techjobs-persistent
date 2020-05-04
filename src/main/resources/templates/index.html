@@ -6,13 +6,16 @@
 
 <div th:replace="fragments :: page-header"></div>
 
+<p th:unless="${skills} and ${skills.size()}">no jobs!</p>
+
 <div class="container body-content">
-    <h2>TechJobs</h2>
+    <h2>Skills</h2>
     <ul>
-        <li th:each="job : ${jobs}">
-            <a th:href="@{'/view/' + ${job.id}}" th:text="${job.name}"></a>
+        <li th:each="skill : ${skills}">
+            <a th:href="@{'/skills/view/' + ${skill.id}}" th:text="${skill.name}"></a>
         </li>
     </ul>
+    <a th:href="@{'/skills/add'}">Add Skills</a>
 
 </div>
 
